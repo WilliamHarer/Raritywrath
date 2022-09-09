@@ -673,7 +673,7 @@ function R:IsAttemptAllowed(item)
 		return false
 	end
 
-	local activeCovenantID = C_Covenants.GetActiveCovenantID()
+	--[[local activeCovenantID = C_Covenants.GetActiveCovenantID()
 	if item.requiresCovenant and item.requiredCovenantID and activeCovenantID ~= item.requiredCovenantID then
 		local activeCovenantData = C_Covenants.GetCovenantData(activeCovenantID)
 		local requiredCovenantData = C_Covenants.GetCovenantData(item.requiredCovenantID)
@@ -689,7 +689,6 @@ function R:IsAttemptAllowed(item)
 			)
 			return false
 		end
-
 		Rarity:Debug(
 			format(
 				"Attempts for item %s are disallowed (Covenant %d/%s is required, but active covenant is %d/%s)",
@@ -702,7 +701,7 @@ function R:IsAttemptAllowed(item)
 		)
 		return false
 	end
-
+	]]
 	-- If any prerequisite quests exist, check if they are all completed
 	if item.requiresCompletedQuestId and type(item.requiresCompletedQuestId) == "table" then
 		for key, questId in pairs(item.requiresCompletedQuestId) do

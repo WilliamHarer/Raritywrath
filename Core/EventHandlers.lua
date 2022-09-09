@@ -232,7 +232,7 @@ end
 
 function R:OnCurrencyUpdate(event)
 	self:Debug("Currency updated (" .. event .. ")")
-
+	--[[
 	-- Check if any archaeology projects were solved
 	self:ScanArchFragments(event)
 
@@ -264,7 +264,8 @@ function R:OnCurrencyUpdate(event)
 				R:CheckForCoinItem()
 			end, 25)
 		end
-	end
+	end]]
+	-- all currencies are post wrath
 end
 
 function R:CheckForCoinItem()

@@ -97,8 +97,9 @@ function Collections:ScanExistingItems(reason)
 
 	-- Scans need to index by spellId, creatureId, achievementId, raceId, itemId (for toys), statisticId (which is a table; for stats)
 
+	--Mounts use the wrath API not the modern one
 	-- Mounts (pre-7.0)
-	if C_MountJournal.GetMountInfo ~= nil then
+	--[[if C_MountJournal.GetMountInfo ~= nil then
 		-- Mounts (7.0+)
 		for id = 1, C_MountJournal.GetNumMounts() do
 			local creatureName, spellId, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, hideOnChar, isCollected =
@@ -151,6 +152,22 @@ function Collections:ScanExistingItems(reason)
 				end
 			end
 		end
+	end]]
+	--wrath mount api call match the companion calls
+	for id = 1, GetNumCompanions("MOUNT") do
+		local spellId = select(3, GetCompanionInfo("MOUNT", id))
+		for k, v in pairs(R.db.profile.groups) do
+			if type(v) == "table" then
+				for kk, vv in pairs(v) do
+					if type(vv) == "table" then
+						if vv.spellId and vv.spellId == spellId and not vv.repeatable then
+							vv.enabled = false
+							vv.found = true
+						end
+					end
+				end
+			end
+		end
 	end
 
 	-- Companions that this character learned
@@ -170,7 +187,9 @@ function Collections:ScanExistingItems(reason)
 		end
 	end
 
+	--these checks crash the startup as C_PetJournal/battlePet stuff isnt in the classic api
 	-- Battle pets across your account
+	--[[
 	if C_PetJournal.SetFlagFilter ~= nil then -- Pre-7.0
 		C_PetJournal.SetFlagFilter(_G.LE_PET_JOURNAL_FLAG_COLLECTED, true)
 		C_PetJournal.SetFlagFilter(_G.LE_PET_JOURNAL_FLAG_FAVORITES, false)
@@ -206,7 +225,7 @@ function Collections:ScanExistingItems(reason)
 				end
 			end
 		end
-	end
+	end--]]
 
 	-- Achievements
 	for k, v in pairs(R.db.profile.groups) do
@@ -226,9 +245,10 @@ function Collections:ScanExistingItems(reason)
 		end
 	end
 
+	--no archaeology
 	-- Scan all archaeology races and set any item attempts to the number of solves for that race
 	-- (if we've never seen attempts for the race before)
-	local s = 0
+	--[[local s = 0
 	for x = 1, GetNumArchaeologyRaces() do
 		local c = GetNumArtifactsByRace(x)
 		local a = 0
@@ -256,7 +276,7 @@ function Collections:ScanExistingItems(reason)
 				end
 			end
 		end
-	end
+	end--]]
 
 	-- Scan all items for Obtained Quest IDs and mark completed if the quest is completed
 	for k, v in pairs(R.db.profile.groups) do
@@ -280,20 +300,22 @@ function Collections:ScanExistingItems(reason)
 	self:ScanStatistics(reason)
 	self:ProfileStart2() -- Statistics does its own profiling
 
-	Rarity.Collections:ScanToys(reason)
+	--no mogs, no toys in wrath
+	--[[Rarity.Collections:ScanToys(reason)
 	self:ProfileStop2("Toys took %fms")
 	self:ProfileStart2()
 
 	Rarity.Collections:ScanTransmog(reason)
 	self:ProfileStop2("Transmog took %fms")
 	self:ProfileStart2()
-
+--]]
 	self:ScanCalendar(reason)
 	self:ProfileStop2("Calendar took %fms")
 	self:ProfileStart2()
-
-	self:ScanInstanceLocks(reason)
+	--this also breaks due to compatability issue but i dont remember why
+	--[[self:ScanInstanceLocks(reason)
 	self:ProfileStop2("Instances took %fms")
+	--]]
 
 	self:ProfileStop("ScanExistingItems: Total time %fms")
 end
